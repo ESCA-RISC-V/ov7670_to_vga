@@ -124,7 +124,6 @@ module ov7670_tb(
         .vga_blue(),
         .vga_hsync(),
         .vga_vsync(),
-        .btn(),
         .PAD_RESET(~rst_n),
         .SW(sw)
         );
