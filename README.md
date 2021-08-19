@@ -1,9 +1,6 @@
 # cnn open과 ov7670 연결하기
 
 ## 참조
-이 프로젝트에 사용된 Lenet inference 베릴로그 코드는 아래의 출처에서 가져왔습니다.
-- https://github.com/lulinchen/cnn_open
-
 이 프로젝트에 사용된 ov7670 to vga 시스템 베릴로그 디자인은 아래 출처의 코드를 참조하여 작성하였습니다.
 - http://www.nazim.ru/2512
 
@@ -68,7 +65,7 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 	- Component Name : blk_mem_gen_0(이 이름은 프로젝트 내에서 첫 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다.)
 	- Memory Type : Simple Dual Port RAM
 	- Port A Options : Port A Width - 8 / Port A Depth - 307200 / Enable Port Type - Always Enabled
-	- Port B Options : Port B Width - 8 / Port B Depth - 307200 / Enable Port Type - Always Enabled
+	- Port B Options : Port B Width - 8 / Port B Depth - 307200 / Enable Port Type - Always Enabled / Not use primitive output register
 
 3. 두번째 block memeory generator 생성
 
@@ -77,16 +74,7 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
   	- Component Name : blk_mem_gen_1(이 이름은 프로젝트 내에서 두 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다)
 	- Memory Type : Simple Dual Port RAM
 	- Port A Options : Port A Width - 4 / Port A Depth - 307200 / Enable Port Type - Always Enabled
-	- Port B Options : Port B Width - 4 / Port B Depth - 307200 / Enable Port Type - Always Enabled
-
-4. 세번째 block memeory generator 생성
-
-이 block memory는 cv_core에서 보내 준 lenet의 input으로 사용될 이미지를 저장하여 lenet으로 보내줍니다.
-
-	- Component Name : blk_mem_gen_2(이 이름은 프로젝트 내에서  번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다)
-	- Memory Type : Simple Dual Port RAM
-	- Port A Options : Port A Width - 8 / Port A Depth - 1024 / Enable Port Type - Always Enabled
-	- Port B Options : Port B Width - 8 / Port A Depth - 1024 / Enable Port Type - Use ENB Pin / Not use primitive output register
+	- Port B Options : Port B Width - 4 / Port B Depth - 307200 / Enable Port Type - Always Enabled / Not use primitive output register
 
 ### 3. Bitstream 생성하기
 
@@ -164,16 +152,12 @@ Bitstream이 올라가고 촬영 화면이 잘 나오는지 확인하세요.
 
 ### 1. 스위치와 버튼
 
-swtich 7 : on - 중앙의 해상도를 바꾸고, inference 실행
+switch 7 : on - 촬영화면 정지
 
-switch 6 : on - 촬영 멈추기 				
-
-switch 5 : on - 중앙 부분에 녹색 테두리 생성 	
-
-switch 4 : on - inference 결과 출력
+switch 0-6 : 사용 안함.
 
 btnc : 하드웨어 리셋
 
 ## 6. 실행화면
 
-![image](https://user-images.githubusercontent.com/80150832/125718052-615958d6-cacc-40e4-8805-bb721efb547c.png)
+![image](https://user-images.githubusercontent.com/80150832/129998987-6c8b276f-1900-44b6-91e3-6430a4b2fc52.png)
