@@ -1,11 +1,10 @@
 # ov7670 to vga
 
 ## 참조
-이 프로젝트에 사용된 Lenet inference 베릴로그 코드는 아래의 출처에서 가져왔습니다.
-- https://github.com/lulinchen/cnn_open
 
 이 프로젝트에 사용된 ov7670 to vga 시스템 베릴로그 디자인은 아래 출처의 코드를 참조하여 작성하였습니다.
 - http://www.nazim.ru/2512
+- https://doongdoongeee.tistory.com/63
 
 이 프로젝트의 VGA sync 신호는 아래의 출처를 참조하였습니다.
 - http://tinyvga.com/vga-timing/640x480@60Hz
