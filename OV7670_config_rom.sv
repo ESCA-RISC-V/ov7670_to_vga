@@ -34,26 +34,30 @@ module OV7670_config_rom(
             dout <= 0;
         end else if(clk_en) begin
             case(addr) 
-            0:  dout <= 16'h12_80; //reset
-            1:  dout <= 16'hFF_F0; //delay
-            //2:  dout <= 16'h12_00; 
-            //3:  dout <= 16'h11_00; 
-            //4:  dout <= 16'h0C_00; 
-            //5:  dout <= 16'h3E_00; 
-            //6:  dout <= 16'h8C_00; 
-            //7:  dout <= 16'h04_00; 
-            //8:  dout <= 16'h40_10; 
-            //9:  dout <= 16'h3A_14; 
-            //10: dout <= 16'h14_38; 
-            //11: dout <= 16'h58_9E; 
-            //12: dout <= 16'h3D_88; 
-            //13: dout <= 16'h11_00; 
-            //14: dout <= 16'h17_11; 
-            //15: dout <= 16'h18_61; 
-            //16: dout <= 16'h32_A4; 
-            //17: dout <= 16'h19_03; 
-            //18: dout <= 16'h1A_7B; 
-            //19: dout <= 16'h03_0A;
+            0:  dout <= 16'h12_80; // COM7      Reset
+            1:  dout <= 16'hFF_F0; // Delay
+            2:  dout <= 16'h12_00; // COM7      Size & RGB output
+            3:  dout <= 16'h11_00; // CLKRC     Prescaler - Fin (1+1)
+            4:  dout <= 16'h0C_00; // COM3      Lots of stuff, enable scaling, all others off
+            5:  dout <= 16'h3E_00; // COM14     PCLK scaling off
+
+            6:  dout <= 16'h8C_00; // RGB444    Set RGB format
+            7:  dout <= 16'h04_00; // COM1      no CCIR601
+            8:  dout <= 16'h40_10; // COM15     Full 0-255 output, RGB 565
+            9:  dout <= 16'h3A_14; // TSLB      Set UV ordering,  do not auto-reset window
+            10: dout <= 16'h14_38; // COM9      AGC Celling
+            11: dout <= 16'h58_9E; // MTXS      Matrix sign and auto contrast
+            12: dout <= 16'h3D_88; // COM13     Turn on GAMMA and UV Auto adjust
+            13: dout <= 16'h11_00; // CLKRC     Prescaler - Fin/(1+1)
+
+            14: dout <= 16'h17_11; // HSTART    HREF start (high 8 bits)
+            15: dout <= 16'h18_61; // HSTOP     HREF stop (high 8 bits)
+            16: dout <= 16'h32_A4; // HREF      Edge offset and low 3 bits of HSTART and HSTOP
+
+            17: dout <= 16'h19_03; // VSTART    VSYNC start (high 8 bits)
+            18: dout <= 16'h1A_7B; // VSTOP     VSYNC stop (high 8 bits) 
+            19: dout <= 16'h03_0A; // VREF      VSYNC low two bits
+
             default: dout <= 16'hFF_FF;         //mark end of ROM
             endcase
         end

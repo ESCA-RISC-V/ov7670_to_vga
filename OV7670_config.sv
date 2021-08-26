@@ -287,5 +287,42 @@ module OV7670_config #(
 		end
 	end
 
+
+	always_ff @(posedge clk or negedge rst_n) begin : proc_timer
+		if(~rst_n) begin
+			timer <= 0;
+		end else if(clk_en) begin
+			case (state)
+				IDLE: begin
+					// do nothing
+				end
+				SEND_CMD: begin
+					case (rom_data)
+						16'hFFFF: begin
+							// do nothing
+						end
+						16'hFFF0: begin
+							timer <= (CLK_FREQ/100);
+						end
+						default: begin
+							if (SCCB_interface_ready) begin
+								timer <= 0;
+							end
+						end 
+					endcase
+				end
+				DONE: begin
+					// do nothing
+				end
+				TIMER: begin
+					timer <= (timer == 0) ? 0 : timer - 1;
+				end
+				default : begin
+					// do nothing
+				end
+			endcase
+		end
+	end
+
 	
 endmodule : OV7670_config
