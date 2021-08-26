@@ -158,3 +158,4 @@ btnc : 하드웨어 리셋
 
 ## 6. 실행화면
 
+![image](https://user-images.githubusercontent.com/80150832/130914867-67806064-a027-4f07-9dd9-c4e3761d3aea.png)
