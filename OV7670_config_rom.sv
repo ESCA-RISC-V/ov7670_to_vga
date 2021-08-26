@@ -36,15 +36,15 @@ module OV7670_config_rom(
             case(addr) 
             0:  dout <= 16'h12_80; //reset
             1:  dout <= 16'hFF_F0; //delay
-            2:  dout <= 16'h12_00; 
-            3:  dout <= 16'h11_00; 
-            4:  dout <= 16'h0C_00; 
-            5:  dout <= 16'h3E_00; 
-            6:  dout <= 16'h8C_00; 
-            7:  dout <= 16'h04_00; 
-            8:  dout <= 16'h40_10; 
-            9:  dout <= 16'h3A_14; 
-            10: dout <= 16'h14_38; 
+            //2:  dout <= 16'h12_00; 
+            //3:  dout <= 16'h11_00; 
+            //4:  dout <= 16'h0C_00; 
+            //5:  dout <= 16'h3E_00; 
+            //6:  dout <= 16'h8C_00; 
+            //7:  dout <= 16'h04_00; 
+            //8:  dout <= 16'h40_10; 
+            //9:  dout <= 16'h3A_14; 
+            //10: dout <= 16'h14_38; 
             //11: dout <= 16'h58_9E; 
             //12: dout <= 16'h3D_88; 
             //13: dout <= 16'h11_00; 
