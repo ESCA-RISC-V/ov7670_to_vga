@@ -36,7 +36,7 @@ module OV7670_config_rom(
             case(addr) 
             0:  dout <= 16'h12_80; // Delay
             1:  dout <= 16'hFF_F0; // COM7      Reset
-            2:  dout <= 16'h12_01; // COM7  
+//          2:  dout <= 16'h12_01; // COM7  
 //          3:  dout <= 16'h12_05; // COM7      Size & RGB output
 //          4:  dout <= 16'h3B_00;
 //          3:  dout <= 16'h11_00; // CLKRC     Prescaler - Fin (1+1)
