@@ -46,7 +46,7 @@ module camera_configure
     always_ff @(posedge clk or negedge rst_n) begin : proc_sys_clk
         if(~rst_n) begin
             sys_clk <= 0;
-        end else if(clk_en) begin
+        end else if(clk_en && done) begin
             sys_clk <= ~sys_clk;
         end
     end

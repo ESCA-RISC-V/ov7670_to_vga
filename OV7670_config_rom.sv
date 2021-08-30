@@ -34,9 +34,11 @@ module OV7670_config_rom(
             dout <= 0;
         end else if(clk_en) begin
             case(addr) 
-            0:  dout <= 16'h12_80; // COM7      Reset
-            1:  dout <= 16'hFF_F0; // Delay
-//          2:  dout <= 16'h12_00; // COM7      Size & RGB output
+            0:  dout <= 16'h12_80; // Delay
+            1:  dout <= 16'hFF_F0; // COM7      Reset
+            2:  dout <= 16'h12_01; // COM7  
+//          3:  dout <= 16'h12_05; // COM7      Size & RGB output
+//          4:  dout <= 16'h3B_00;
 //          3:  dout <= 16'h11_00; // CLKRC     Prescaler - Fin (1+1)
 //          4:  dout <= 16'h0C_00; // COM3      Lots of stuff, enable scaling, all others off
 //          5:  dout <= 16'h3E_00; // COM14     PCLK scaling off

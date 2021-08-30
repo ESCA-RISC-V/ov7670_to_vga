@@ -72,20 +72,6 @@ module ov7670_top	#(
 	logic [3:0]		frame_pixel;
 	// controller to LED
 	logic 			config_finished;
-	// memory2 controller
-	logic [9:0]		addr_core_to_mem2;
-	logic [7:0]		data_core_to_mem2;
-	logic 			lenet_we;
-	// lenet memory access
-	logic [9:0]    addr_lenet_to_mem2;
-	logic [7:0]   data_lenet_from_mem2;
-	logic          ren_lenet_to_mem2;
-	// lenet control and output
-	logic          lenet_rstn;
-	logic          lenet_go;
-	logic          lenet_ready;
-	logic[3:0]     lenet_digit;
-	logic          data_ready;
 	
     wire rst_n = ~PAD_RESET;
 
@@ -171,8 +157,10 @@ module ov7670_top	#(
 			.vga_vsync(vga_vsync)
 			);
 
-        camera_configure configure(
-		  .clk(clk50),
+        camera_configure #(
+          .CLK_FREQ(100000000)
+            )configure(
+		  .clk(clk100),
 		  .clk_en(1'b1),
 		  .rst_n(rst_n),
 		  .sioc(OV7670_SIOC),
