@@ -48,7 +48,7 @@ module core #(
         if(~rst_n) begin
             counter <= '0;
         end else begin
-            if (counter >= c_frame) begin
+            if (counter == c_frame) begin
                 counter <= '0;
             end else begin
                 counter <= counter + 1;
@@ -60,7 +60,7 @@ module core #(
         if(~rst_n) begin
             address_mem0 <= '0;
         end else begin
-            if (counter >= c_frame) begin
+            if (counter == c_frame) begin
                 address_mem0 <= '0;
             end else begin
                 address_mem0 <= address_mem0 + 1;
@@ -72,7 +72,7 @@ module core #(
         if(~rst_n) begin
             address_mem1 <= 0;
         end else begin
-            if (counter >= c_frame) begin
+            if (counter == c_frame) begin
                 address_mem1 <= 0;
             end else begin
                 address_mem1 <= address_mem1 + 1;
@@ -84,7 +84,7 @@ module core #(
         if(~rst_n) begin
             dout <= '0;
         end else begin
-            if (counter >= c_frame) begin
+            if (counter == c_frame) begin
                 dout <= '0;
             end else begin
                 dout <= din[7:4];
@@ -96,10 +96,10 @@ module core #(
         if(~rst_n) begin
             we <= 0;
         end else begin
-            if (counter >= c_frame) begin
+            if (counter == c_frame) begin
                 we <= '0;
             end else begin
-                if (counter == 1'b1) begin
+                if (counter >= 1'b1) begin
                     we <= 1'b1;
                 end
             end

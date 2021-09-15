@@ -26,38 +26,24 @@ module camera_configure
     )
     (
     input clk,
+    input sclk,
     input clk_en,
     input rst_n,
     output sioc,
-    output siod,
+    inout siod,
     output done,
-    output reset,
+    output logic reset,
     output pwdn,
-    output xclk
+    output xclk,
+    output [7:0] read
     );
     
     logic sys_clk;
     logic start;
-
-    assign reset = 1'b1;
+    logic [9:0] counter;
     assign pwdn = 1'b0;
+    assign reset = 1'b1;
     assign xclk = sys_clk;
-
-    always_ff @(posedge clk or negedge rst_n) begin : proc_sys_clk
-        if(~rst_n) begin
-            sys_clk <= 0;
-        end else if(clk_en && done) begin
-            sys_clk <= ~sys_clk;
-        end
-    end
-
-    always_ff @(posedge clk or negedge rst_n) begin : proc_start
-        if(~rst_n) begin
-            start <= 1;
-        end else if(clk_en) begin
-            start <= 0;
-        end
-    end
 
     wire [7:0] rom_addr;
     wire [15:0] rom_dout;
@@ -65,12 +51,29 @@ module camera_configure
     wire [7:0] SCCB_data;
     wire SCCB_start;
     wire SCCB_ready;
-    wire SCCB_SIOC_oe;
-    wire SCCB_SIOD_oe;
-    
-    assign sioc = SCCB_SIOC_oe ? 1'b0 : 1'b1;
-    assign siod = SCCB_SIOD_oe ? 1'b0 : 1'b1;
 
+    always_ff @(posedge sclk or negedge rst_n) begin : proc_sys_clk
+        if(~rst_n) begin
+            sys_clk <= 0;
+        end else if (clk_en) begin
+            sys_clk <= ~sys_clk;
+        end
+    end
+
+    always_ff @(posedge clk or negedge rst_n) begin : proc_start
+        if(~rst_n) begin
+            start <= 0;
+            counter <= 100;
+        end else if(clk_en) begin
+            counter <= counter == 0 ? 0 : counter - 1;
+            if (counter == 1) begin
+                start <= 1;
+            end else begin
+                start <= 0;
+            end
+        end
+    end
+    
     OV7670_config_rom rom1(
         .clk(clk),
         .clk_en(clk_en),
@@ -93,7 +96,7 @@ module camera_configure
         .SCCB_interface_start(SCCB_start)
         );
     
-    SCCB_interface #( .CLK_FREQ(CLK_FREQ)) SCCB1(
+    sccb_interface #( .CLK_FREQ(CLK_FREQ)) SCCB1(
         .clk(clk),
         .clk_en(clk_en),
         .rst_n(rst_n),
@@ -101,8 +104,9 @@ module camera_configure
         .address(SCCB_addr),
         .data(SCCB_data),
         .ready(SCCB_ready),
-        .SIOC_oe(SCCB_SIOC_oe),
-        .SIOD_oe(SCCB_SIOD_oe)
+        .sioc_signal(sioc),
+        .siod_signal(siod),
+        .read_data(read)
         );
     
 endmodule

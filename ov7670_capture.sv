@@ -27,7 +27,9 @@ module ov7670_capture 	(
 						output logic[7:0]	dout,
 						output logic 		we
 						);
-	logic state;
+						
+    typedef enum logic[1:0] {IDLE, NY, Y} data_state;
+	data_state state;
     logic we_go;
     logic [18:0] addr_t, addr_s;
     
@@ -48,7 +50,7 @@ module ov7670_capture 	(
 		end else begin
 			if (vsync == 1'b1) begin
 				addr_t <= '0;
-			end else if (state == 1'b1 && href == 1'b1) begin
+			end else if (state == Y && href == 1'b1) begin
 				addr_t <= addr_t + 1;
 			end
 		end
@@ -58,7 +60,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			dout <= '0;
 		end else begin
-			if (~(vsync == 1'b1) && ~(state == 1'b1 && href == 1'b1)) begin
+			if (~(vsync == 1'b1) && ~(state == Y && href == 1'b1)) begin
 				dout <= din;
 			end
 		end
@@ -68,24 +70,27 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we <= '0;
 		end else begin
-			if (vsync == 1'b1 || (state == 1'b1 && href == 1'b1)) begin
-				we <= '0;
-			end else begin
+			if (state == NY && href == 1'b1) begin
 				we <= ~we_go;
+			end else begin
+				we <= 0;
 			end
 		end
 	end
 
 	always_ff @(posedge pclk or negedge rst_n) begin : proc_state
 		if(~rst_n) begin
-			state <= 1'b0;
+			state <= IDLE;
 		end else begin
 			if (vsync == 1'b1) begin
-				state <= 1'b0;
-			end else if (state == 1'b1 && href == 1'b1) begin
-				state <= 1'b0;
-			end else begin
-				state <= 1'b1;
+				state <= IDLE;
+			end else if (href == 1'b1) begin
+				case (state)
+					IDLE: 	state <= NY;
+					NY:		state <= Y;
+					Y:		state <= NY;
+					default : ;
+				endcase
 			end
 		end
 	end

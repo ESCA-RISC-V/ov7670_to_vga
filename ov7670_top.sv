@@ -27,29 +27,28 @@
 module ov7670_top	#(
                     parameter screenwidth = 640,
                     parameter screenheight = 480
-                    
                     )(
 					input 	     		    clk100_zed,
-					output      			OV7670_SIOC,                           // similar with I2C's SCL
-					inout 	     			OV7670_SIOD,                           // similar with I2C's SDA
-					output      			OV7670_RESET,                          // ov7670 reset
-					output      			OV7670_PWDN,                           // ov7670 power down
-					input 	     			OV7670_VSYNC,                          // ov7670 vertical sync
-					input 	     			OV7670_HREF,                           // ov7670 horizontal reference
-					input 	     			OV7670_PCLK,                           // ov7670 pclock
-					output      			OV7670_XCLK,                           // ov7670 xclock
-					input 	       [7:0] 	OV7670_D,                              // ov7670 data
+					output      			OV7670_SIOC,  // similar with I2C's SCL
+					inout 	     			OV7670_SIOD,  // similar with I2C's SDA
+					output      			OV7670_RESET, // ov7670 reset
+					output      			OV7670_PWDN,  // ov7670 power down
+					input 	     			OV7670_VSYNC, // ov7670 vertical sync
+					input 	     			OV7670_HREF,  // ov7670 horizontal reference
+					input 	     			OV7670_PCLK,  // ov7670 pclock
+					output      			OV7670_XCLK,  // ov7670 xclock
+					input 	       [7:0] 	OV7670_D,     // ov7670 data
 		
-					output         [7:0]    LED,                                   // zedboard_LED
+					output         [7:0]    LED,          // zedboard_LED
 		
-					output         [3:0]	vga_red,                               // vga red output
-					output	       [3:0]	vga_green,                             // vga green output
-					output	       [3:0]	vga_blue,                              // vga blue output
-					output	                vga_hsync,                             // vga horizontal sync
-					output	                vga_vsync,                             // vga vertical sync
+					output         [3:0]	vga_red,      // vga red output
+					output	       [3:0]	vga_green,    // vga green output
+					output	       [3:0]	vga_blue,     // vga blue output
+					output	                vga_hsync,    // vga horizontal sync
+					output	                vga_vsync,    // vga vertical sync
 
 					input                   PAD_RESET,
-					input 	       [7:0]	SW                                    // zedboard SW (switch )
+					input 	       [7:0]	SW            // zedboard SW (switch )
 					);
         
 	// clocks
@@ -72,21 +71,26 @@ module ov7670_top	#(
 	logic [3:0]		frame_pixel;
 	// controller to LED
 	logic 			config_finished;
+	logic [7:0]     read;
 	
     wire rst_n = ~PAD_RESET;
 
-    assign LED = {SW[7:1], config_finished};             // show LED some informations
-    
-		clk_wiz_0 clkwiz(                                             // clock generator
+// show some informations with LED
+//  assign LED = {SW[7:3], OV7670_SIOC, OV7670_SIOD, config_finished};
+    assign LED = read;
+
+// clock generator
+		clk_wiz_0 clkwiz(
 			.clk_in_wiz(clk100_zed),
 			.clk_100wiz(clk100),
 			.clk_75wiz(clk75),
 			.clk_50wiz(clk50),
 			.clk_25wiz(clk25),
 			.resetn(rst_n)
-			);                                                       
-
-		ov7670_capture icapture(                                      // gets datas from ov7670 and stores them to fb1
+			);                                  
+			                     
+// gets datas from ov7670 and stores them to fb1
+		ov7670_capture icapture(
 			.pclk(OV7670_PCLK),
 			.vsync(OV7670_VSYNC),
 			.href(OV7670_HREF),
@@ -98,7 +102,8 @@ module ov7670_top	#(
 			.we(capture_we[0])
 			);
 
-    	blk_mem_gen_0 fb1(                                             // stores captured data
+// stores captured data
+    	blk_mem_gen_0 captured_data(
 			.clka(OV7670_PCLK),
 			.wea(capture_we),
 			.addra(capture_addr),
@@ -109,10 +114,12 @@ module ov7670_top	#(
 			.doutb(data_to_core)
 			);
 
+// loads data from fb1 and processes it, stores processed data to fb2, 
+// you can modify this module to change vga output or anything else
 		core #(
 		    .width(screenwidth),
 		    .height(screenheight)
-		    )icore(                                                   // loads data from fb1 and processes it, stores processed data to fb2 and fb3, you can modify this module to change vga output or anything else
+		    )icore(                                                   
 			.clk25(clk25),
 			.din(data_to_core),
 			.lenet_signal(SW[7]),
@@ -123,7 +130,8 @@ module ov7670_top	#(
 			.we(we_core_to_mem1[0])
 			);
 
-		blk_mem_gen_1 fb2(                                            // stores processed data, connected with vga module
+// stores processed data, connected with vga module
+		blk_mem_gen_1 processed_data_for_vg(                                            
 			.clka(clk25),
 			.wea(we_core_to_mem1),
 			.addra(addr_core_to_mem1),
@@ -134,6 +142,7 @@ module ov7670_top	#(
 			.doutb(frame_pixel)
 			);
 
+// loads data from fb and sends it to vga output
 		vga #(
 		     .hRez(640),
 		     .hStartSync(640 + 16),
@@ -145,7 +154,7 @@ module ov7670_top	#(
 		     .vMaxCount(480 + 10 + 2 + 33),
 		     .hsync_active(1'b0),
 		     .vsync_active(1'b0)
-		     )ivga(                                                     // loads data from fb and sends it to vga output
+		     )ivga(                                                     
 			.clk25(clk25),
 			.rst_n(rst_n),
 			.frame_addr(frame_addr),
@@ -157,10 +166,12 @@ module ov7670_top	#(
 			.vga_vsync(vga_vsync)
 			);
 
+// SCCB comunication with OV7670
         camera_configure #(
-          .CLK_FREQ(100000000)
+          .CLK_FREQ(25000000)
             )configure(
-		  .clk(clk100),
+		  .clk(clk25),
+		  .sclk(clk100),
 		  .clk_en(1'b1),
 		  .rst_n(rst_n),
 		  .sioc(OV7670_SIOC),
@@ -168,7 +179,8 @@ module ov7670_top	#(
           .done(config_finished),
           .pwdn(OV7670_PWDN),
           .reset(OV7670_RESET),
-          .xclk(OV7670_XCLK)
+          .xclk(OV7670_XCLK),
+          .read(read)
 		  );
 
 endmodule // ov7670_top

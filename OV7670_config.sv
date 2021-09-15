@@ -250,7 +250,6 @@ module OV7670_config #(
 		end
 	end
 
-
 	always_ff @(posedge clk or negedge rst_n) begin : proc_SCCB_interface_start
 		if(~rst_n) begin
 			SCCB_interface_start <= 0;
