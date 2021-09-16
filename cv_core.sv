@@ -22,7 +22,7 @@ module core #(
             parameter width = 640,
             parameter height = 480,
             
-            localparam c_frame = width * height
+            localparam c_frame = width * height + 1
             )
             (
 			input                         clk25,
@@ -42,7 +42,7 @@ module core #(
 	logic[18:0] address_mem1;
 
     assign addr_mem0 = address_mem0;
-    assign addr_mem1 = address_mem1;
+    assign addr_mem1 = address_mem1 - 1;
     
 // counter - count per pixel - used for checking one frame processing ends.
     always_ff @(posedge clk25 or negedge rst_n) begin : proc_counter                                        

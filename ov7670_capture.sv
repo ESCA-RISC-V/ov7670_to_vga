@@ -33,25 +33,14 @@ module ov7670_capture 	(
     logic we_go;
     logic [18:0] addr_t, addr_s;
     
-    
-    always_ff @(posedge pclk or negedge rst_n) begin : proc_addr
-        if (~rst_n) begin
-            addr <= 0;
-            addr_s <= 0;
-        end else begin
-            addr <= addr_s;
-            addr_s <= addr_t;
-        end
-    end
-
 	always_ff @(posedge pclk or negedge rst_n) begin : proc_addr_t
 		if(~rst_n) begin
-			addr_t <= '0;
+			addr <= '0;
 		end else begin
 			if (vsync == 1'b1) begin
-				addr_t <= '0;
-			end else if (state == Y && href == 1'b1) begin
-				addr_t <= addr_t + 1;
+				addr <= '0;
+			end else if (state == Y) begin
+				addr <= addr + 1;
 			end
 		end
 	end
@@ -60,7 +49,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			dout <= '0;
 		end else begin
-			if (~(vsync == 1'b1) && ~(state == Y && href == 1'b1)) begin
+			if (state == NY) begin // former state == NY && href == 1 means present state == Y
 				dout <= din;
 			end
 		end
@@ -70,7 +59,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we <= '0;
 		end else begin
-			if (state == NY && href == 1'b1) begin
+			if (state == NY) begin
 				we <= ~we_go;
 			end else begin
 				we <= 0;
@@ -89,8 +78,10 @@ module ov7670_capture 	(
 					IDLE: 	state <= NY;
 					NY:		state <= Y;
 					Y:		state <= NY;
-					default : ;
+					default : state <= IDLE;
 				endcase
+			end else begin
+			    state <= IDLE;
 			end
 		end
 	end

@@ -41,10 +41,12 @@ module sccb_interface #(
 
     typedef enum {IDLE, START_SIGNAL, LOAD_BYTE, TX_BYTE_1, TX_BYTE_2, TX_BYTE_3, TX_BYTE_4, RX_BYTE_1, RX_BYTE_2, RX_BYTE_3, RX_BYTE_4, END_SIGNAL_1, END_SIGNAL_2, END_SIGNAL_3, END_SIGNAL_4, ALL_DONE, TIMER} FSM_STATE;
     typedef enum {WRITE, READ} FSM_ACTION;
-
+    typedef enum {FIRST_WRITE, SECOND_READ} READ_ORDER;
+    
     FSM_STATE state;
 	FSM_STATE return_state;
     FSM_ACTION action;
+    READ_ORDER order;
     
 	logic [31:0] timer;
 	logic [7:0] latched_address;
@@ -381,7 +383,7 @@ module sccb_interface #(
 							timer <= (CLK_FREQ/(4*SCCB_FREQ));
 						end
 						ALL_DONE: begin
-							timer <= (4*CLK_FREQ/SCCB_FREQ);
+							timer <= (10*CLK_FREQ/SCCB_FREQ);
 						end
 						TIMER: begin
 							timer <= (timer==0)?0:timer-1;
@@ -439,7 +441,7 @@ module sccb_interface #(
 							timer <= (CLK_FREQ/(4*SCCB_FREQ));
 						end
 						ALL_DONE: begin
-							timer <= (4*CLK_FREQ/SCCB_FREQ);
+							timer <= (10*CLK_FREQ/SCCB_FREQ);
 						end
 						TIMER: begin
 							timer <= (timer==0)?0:timer-1;
@@ -2041,9 +2043,9 @@ module sccb_interface #(
     	end
     end
 
-    always_ff @(posedge clk or negedge rst_n) begin : proc_former_two_phase_write
+    always_ff @(posedge clk or negedge rst_n) begin : proc_order
     	if(~rst_n) begin
-    		former_two_phase_write <= 1;
+    		order <= FIRST_WRITE;
     	end else if(clk_en) begin
     		case (action)
     			READ:begin
@@ -2094,7 +2096,11 @@ module sccb_interface #(
 							
 						end
 						ALL_DONE: begin
-							former_two_phase_write <= !former_two_phase_write;
+							case (order)
+							FIRST_WRITE: order <= SECOND_READ;
+							SECOND_READ: order <= FIRST_WRITE;
+							default:order <= FIRST_WRITE;
+							endcase
 						end
 						TIMER: begin
 							
