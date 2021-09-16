@@ -43,8 +43,9 @@ module core #(
 
     assign addr_mem0 = address_mem0;
     assign addr_mem1 = address_mem1;
-
-    always_ff @(posedge clk25 or negedge rst_n) begin : proc_counter                                        // counter - count per pixel - used for checking one frame processing ends.
+    
+// counter - count per pixel - used for checking one frame processing ends.
+    always_ff @(posedge clk25 or negedge rst_n) begin : proc_counter                                        
         if(~rst_n) begin
             counter <= '0;
         end else begin
@@ -56,7 +57,8 @@ module core #(
         end
     end
 
-    always_ff @(posedge clk25 or negedge rst_n) begin : proc_address_mem0                                   // address_mem0 - address of pixel of input data
+// address_mem0 - address of pixel of input data
+    always_ff @(posedge clk25 or negedge rst_n) begin : proc_address_mem0                                   
         if(~rst_n) begin
             address_mem0 <= '0;
         end else begin
@@ -68,7 +70,8 @@ module core #(
         end
     end
 
-    always_ff @(posedge clk25 or negedge rst_n) begin : proc_address_mem1                                   // address for ouput image's pixel - this will be shown on the monitor
+// address for ouput image's pixel - this will be shown on the monitor
+    always_ff @(posedge clk25 or negedge rst_n) begin : proc_address_mem1                                   
         if(~rst_n) begin
             address_mem1 <= 0;
         end else begin
@@ -80,7 +83,8 @@ module core #(
         end
     end
     
-    always_ff @(posedge clk25 or negedge rst_n) begin : proc_dout                                           // vga output pixel data 
+// vga output pixel data
+    always_ff @(posedge clk25 or negedge rst_n) begin : proc_dout                                            
         if(~rst_n) begin
             dout <= '0;
         end else begin
@@ -92,7 +96,8 @@ module core #(
         end
     end
 
-    always_ff @(posedge clk25 or negedge rst_n) begin : proc_we                                             // write enable of vga output pixel
+// write enable of vga output pixel
+    always_ff @(posedge clk25 or negedge rst_n) begin : proc_we                                             
         if(~rst_n) begin
             we <= 0;
         end else begin

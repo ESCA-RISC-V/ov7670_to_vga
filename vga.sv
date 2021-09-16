@@ -55,7 +55,8 @@ module vga
 	
 	assign frame_addr = address;
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_hCounter                  // horizontal counter of vga output
+// horizontal counter of vga output
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_hCounter                  
 		if(~rst_n) begin
 			hCounter <= '0;
 		end else begin
@@ -67,7 +68,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vCounter                  // vertical counter of vga output
+// vertical counter of vga output
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vCounter                  
 		if(~rst_n) begin
 			vCounter <= '0;
 		end else begin
@@ -81,7 +83,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_address                   // address of vga output pixel
+// address of vga output pixel
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_address                   
 		if(~rst_n) begin
 			address <= 0;
 		end else begin
@@ -95,7 +98,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_blank                     // whether send pixel value or not
+// whether send pixel value or not
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_blank                     
 		if(~rst_n) begin
 			blank <= 1'b1;
 		end else begin
@@ -111,7 +115,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_rgb                   // vga_rgb value
+// vga_rgb value
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_rgb                   
 		if(~rst_n) begin
 			{vga_red, vga_green, vga_blue} <= '0;
 		end else begin
@@ -127,7 +132,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_hsync                 // vga horizontal sync
+// vga horizontal sync
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_hsync                 
 		if(~rst_n) begin
 			vga_hsync <= ~hsync_active;
 		end else begin
@@ -139,7 +145,8 @@ module vga
 		end
 	end
 
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_vsync                 // vga vertical sync
+// vga vertical sync
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_vsync                 
 		if(~rst_n) begin
 			vga_vsync <= ~vsync_active;
 		end else begin

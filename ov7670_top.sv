@@ -76,7 +76,7 @@ module ov7670_top	#(
     wire rst_n = ~PAD_RESET;
 
 // show some informations with LED
-//  assign LED = {SW[7:3], OV7670_SIOC, OV7670_SIOD, config_finished};
+//  assign LED = {SW[7:1], config_finished};
     assign LED = read;
 
 // clock generator
@@ -89,7 +89,7 @@ module ov7670_top	#(
 			.resetn(rst_n)
 			);                                  
 			                     
-// gets datas from ov7670 and stores them to fb1
+// gets datas from ov7670 and stores them to captured_data
 		ov7670_capture icapture(
 			.pclk(OV7670_PCLK),
 			.vsync(OV7670_VSYNC),
@@ -114,7 +114,8 @@ module ov7670_top	#(
 			.doutb(data_to_core)
 			);
 
-// loads data from fb1 and processes it, stores processed data to fb2, 
+// loads data from captured_data and processes it, 
+// stores processed data to processed_data_for_vga, 
 // you can modify this module to change vga output or anything else
 		core #(
 		    .width(screenwidth),
@@ -131,7 +132,7 @@ module ov7670_top	#(
 			);
 
 // stores processed data, connected with vga module
-		blk_mem_gen_1 processed_data_for_vg(                                            
+		blk_mem_gen_1 processed_data_for_vga(                                            
 			.clka(clk25),
 			.wea(we_core_to_mem1),
 			.addra(addr_core_to_mem1),
