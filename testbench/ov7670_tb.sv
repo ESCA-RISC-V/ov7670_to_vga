@@ -52,7 +52,7 @@ module ov7670_tb(
     end
     
     initial begin
-        sw = 8'b10110000;
+        sw = 8'b00110000;
     end
     
     always_ff @(posedge !pclkgen or negedge rst_n) begin : proc_d
