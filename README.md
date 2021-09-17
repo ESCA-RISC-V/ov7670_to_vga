@@ -12,7 +12,7 @@
 ## 시작하기
 이 프로젝트는 아래의 환경을 기반으로 작성되었습니다.
 - Windows 10
-- Vivado Design Suite 2019.1
+- Vivado Design Suite 2019.1 / 2020.1
 - Xilinx Zedboard
 - VGA to VGA 포트와 VGA 인풋이 있는 모니터
 
