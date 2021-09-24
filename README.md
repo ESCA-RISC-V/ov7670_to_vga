@@ -1,4 +1,4 @@
-# ov7670 to vga
+# ov7670 to vga - rgb branch
 
 ## 참조
 
@@ -62,21 +62,21 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 
 2. 첫번째 block memeory generator 생성
 
-이 block memory는 ov7670_capture에서 보내 준 이미지를 저장하고 cv_core로 보내줍니다.
+이 block memory는 red[3:0] / green[3:1] 총 7bit의 data를 저장합니다.
 
 	- Component Name : blk_mem_gen_0(이 이름은 프로젝트 내에서 첫 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다.)
 	- Memory Type : Simple Dual Port RAM
-	- Port A Options : Port A Width - 8 / Port A Depth - 307200 / Enable Port Type - Always Enabled
-	- Port B Options : Port B Width - 8 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
+	- Port A Options : Port A Width - 7 / Port A Depth - 307200 / Enable Port Type - Always Enabled
+	- Port B Options : Port B Width - 7 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
 
 3. 두번째 block memeory generator 생성
 
-이 block memory는 cv_core에서 보내 준 이미지를 저장하여 vga로 보내줍니다.
+이 block memory는 green[0] / blue[3:0] 총 5bit의 data를 저장합니다.
 
   	- Component Name : blk_mem_gen_1(이 이름은 프로젝트 내에서 두 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다)
 	- Memory Type : Simple Dual Port RAM
-	- Port A Options : Port A Width - 4 / Port A Depth - 307200 / Enable Port Type - Always Enabled
-	- Port B Options : Port B Width - 4 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
+	- Port A Options : Port A Width - 5 / Port A Depth - 307200 / Enable Port Type - Always Enabled
+	- Port B Options : Port B Width - 5 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
   
 ### 3. Bitstream 생성하기
 
