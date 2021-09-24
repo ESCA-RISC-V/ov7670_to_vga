@@ -155,6 +155,10 @@ Bitstream이 올라가고 촬영 화면이 잘 나오는지 확인하세요.
 ### 1. 스위치와 버튼
 
 btnc : 하드웨어 리셋
+switch 7 : 화면 정지
+switch 6 : Red 값 VGA로 송출 중지
+switch 5 : Green 값 VGA로 송출 중지
+switch 4 : Blue 값 VGA로 송출 중지
 
 ## 6. 실행화면
 
