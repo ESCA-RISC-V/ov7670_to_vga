@@ -27,28 +27,29 @@
 module ov7670_top	#(
                     parameter screenwidth = 640,
                     parameter screenheight = 480
+                    
                     )(
 					input 	     		    clk100_zed,
-					output      			OV7670_SIOC,  // similar with I2C's SCL
-					inout 	     			OV7670_SIOD,  // similar with I2C's SDA
-					output      			OV7670_RESET, // ov7670 reset
-					output      			OV7670_PWDN,  // ov7670 power down
-					input 	     			OV7670_VSYNC, // ov7670 vertical sync
-					input 	     			OV7670_HREF,  // ov7670 horizontal reference
-					input 	     			OV7670_PCLK,  // ov7670 pclock
-					output      			OV7670_XCLK,  // ov7670 xclock
-					input 	       [7:0] 	OV7670_D,     // ov7670 data
+					output      			OV7670_SIOC,                           // similar with I2C's SCL
+					inout 	     			OV7670_SIOD,                           // similar with I2C's SDA
+					output      			OV7670_RESET,                          // ov7670 reset
+					output      			OV7670_PWDN,                           // ov7670 power down
+					input 	     			OV7670_VSYNC,                          // ov7670 vertical sync
+					input 	     			OV7670_HREF,                           // ov7670 horizontal reference
+					input 	     			OV7670_PCLK,                           // ov7670 pclock
+					output      			OV7670_XCLK,                           // ov7670 xclock
+					input 	       [7:0] 	OV7670_D,                              // ov7670 data
 		
-					output         [7:0]    LED,          // zedboard_LED
+					output         [7:0]    LED,                                   // zedboard_LED
 		
-					output         [3:0]	vga_red,      // vga red output
-					output	       [3:0]	vga_green,    // vga green output
-					output	       [3:0]	vga_blue,     // vga blue output
-					output	                vga_hsync,    // vga horizontal sync
-					output	                vga_vsync,    // vga vertical sync
+					output         [3:0]	vga_red,                               // vga red output
+					output	       [3:0]	vga_green,                             // vga green output
+					output	       [3:0]	vga_blue,                              // vga blue output
+					output	                vga_hsync,                             // vga horizontal sync
+					output	                vga_vsync,                             // vga vertical sync
 
 					input                   PAD_RESET,
-					input 	       [7:0]	SW            // zedboard SW (switch )
+					input 	       [7:0]	SW                                    // zedboard SW (switch )
 					);
         
 	// clocks
@@ -59,38 +60,28 @@ module ov7670_top	#(
 	// capture to mem_blk_0
 	logic [18:0]	capture_addr;
 	logic [7:0] 	capture_data;
-	logic [0:0]		capture_we;
-	// mem_blk_0 -> core -> mem_blk_1
-	logic [7:0]		data_to_core;
-	logic [3:0]		data_from_core;
-	logic [18:0]	addr_core_to_mem0;
-	logic [18:0]	addr_core_to_mem1;
-	logic [0:0]		we_core_to_mem1;
+	logic [1:0]		capture_we;
 	// mem_blk_1 to vga
 	logic [18:0]	frame_addr;
-	logic [3:0]		frame_pixel;
+	logic [11:0]    frame_pixel;
+	
 	// controller to LED
 	logic 			config_finished;
-	logic [7:0]     read;
 	
     wire rst_n = ~PAD_RESET;
 
-// show some informations with LED
-//  assign LED = {SW[7:1], config_finished};
-    assign LED = read;
-
-// clock generator
-		clk_wiz_0 clkwiz(
+    assign LED = {SW[7:1], config_finished};             // show LED some informations
+    
+		clk_wiz_0 clkwiz(                                             // clock generator
 			.clk_in_wiz(clk100_zed),
 			.clk_100wiz(clk100),
 			.clk_75wiz(clk75),
 			.clk_50wiz(clk50),
 			.clk_25wiz(clk25),
 			.resetn(rst_n)
-			);                                  
-			                     
-// gets datas from ov7670 and stores them to captured_data
-		ov7670_capture icapture(
+			);                                                       
+
+		ov7670_capture icapture(                                      // gets datas from ov7670 and stores them to fb1
 			.pclk(OV7670_PCLK),
 			.vsync(OV7670_VSYNC),
 			.href(OV7670_HREF),
@@ -99,51 +90,31 @@ module ov7670_top	#(
 			.din(OV7670_D),
 			.addr(capture_addr),
 			.dout(capture_data),
-			.we(capture_we[0])
+			.we(capture_we)
 			);
 
-// stores captured data
-    	blk_mem_gen_0 captured_data(
+    	blk_mem_gen_0 red4green3(                                             // stores captured data
 			.clka(OV7670_PCLK),
-			.wea(capture_we),
+			.wea(capture_we[1]),
 			.addra(capture_addr),
-			.dina(capture_data),
-
-			.clkb(clk50),
-			.addrb(addr_core_to_mem0),
-			.doutb(data_to_core)
-			);
-
-// loads data from captured_data and processes it, 
-// stores processed data to processed_data_for_vga, 
-// you can modify this module to change vga output or anything else
-		core #(
-		    .width(screenwidth),
-		    .height(screenheight)
-		    )icore(                                                   
-			.clk25(clk25),
-			.din(data_to_core),
-			.lenet_signal(SW[7]),
-			.rst_n(rst_n),
-			.addr_mem0(addr_core_to_mem0),
-			.addr_mem1(addr_core_to_mem1),
-			.dout(data_from_core),
-			.we(we_core_to_mem1[0])
-			);
-
-// stores processed data, connected with vga module
-		blk_mem_gen_1 processed_data_for_vga(                                            
-			.clka(clk25),
-			.wea(we_core_to_mem1),
-			.addra(addr_core_to_mem1),
-			.dina(data_from_core),
+			.dina({capture_data[7:4], capture_data[2:0]}),
 
 			.clkb(clk50),
 			.addrb(frame_addr),
-			.doutb(frame_pixel)
+			.doutb(frame_pixel[11:5])
 			);
+			
+        blk_mem_gen_1 green1blue4(                                             // stores captured data
+			.clka(OV7670_PCLK),
+			.wea(capture_we[0]),
+			.addra(capture_addr),
+			.dina({capture_data[7], capture_data[4:1]}),
 
-// loads data from fb and sends it to vga output
+			.clkb(clk50),
+			.addrb(frame_addr),
+			.doutb(frame_pixel[4:0])
+			);
+			
 		vga #(
 		     .hRez(640),
 		     .hStartSync(640 + 16),
@@ -155,7 +126,7 @@ module ov7670_top	#(
 		     .vMaxCount(480 + 10 + 2 + 33),
 		     .hsync_active(1'b0),
 		     .vsync_active(1'b0)
-		     )ivga(                                                     
+		     )ivga(                                                     // loads data from fb and sends it to vga output
 			.clk25(clk25),
 			.rst_n(rst_n),
 			.frame_addr(frame_addr),
@@ -164,10 +135,10 @@ module ov7670_top	#(
 			.vga_green(vga_green),
 			.vga_blue(vga_blue),
 			.vga_hsync(vga_hsync),
-			.vga_vsync(vga_vsync)
+			.vga_vsync(vga_vsync),
+			.switches(SW[6:4])
 			);
 
-// SCCB comunication with OV7670
         camera_configure #(
           .CLK_FREQ(25000000)
             )configure(
@@ -180,8 +151,7 @@ module ov7670_top	#(
           .done(config_finished),
           .pwdn(OV7670_PWDN),
           .reset(OV7670_RESET),
-          .xclk(OV7670_XCLK),
-          .read(read)
+          .xclk(OV7670_XCLK)
 		  );
 
 endmodule // ov7670_top

@@ -25,23 +25,25 @@ module ov7670_capture 	(
 						input               rst_n,
 						output logic[18:0]	addr,
 						output logic[7:0]	dout,
-						output logic 		we
+						output logic[1:0]	we
 						);
 						
-    typedef enum logic[1:0] {IDLE, NY, Y} data_state;
+    typedef enum {IDLE, RG, BX} data_state;
 	data_state state;
     logic we_go;
-    logic [18:0] addr_t, addr_s;
-    
-	always_ff @(posedge pclk or negedge rst_n) begin : proc_addr_t
+    logic[18:0]	addr_t;
+
+	always_ff @(posedge pclk or negedge rst_n) begin : proc_addr
 		if(~rst_n) begin
 			addr <= '0;
+			addr_t <= '0;
 		end else begin
 			if (vsync == 1'b1) begin
-				addr <= '0;
-			end else if (state == Y) begin
-				addr <= addr + 1;
+				addr_t <= '0;
+			end else if (state == BX) begin
+				addr_t <= addr_t + 1;
 			end
+            addr <= addr_t;
 		end
 	end
 
@@ -49,9 +51,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			dout <= '0;
 		end else begin
-			if (state == NY) begin // former state == NY && href == 1 means present state == Y
-				dout <= din;
-			end
+            dout <= din;
 		end
 	end
 
@@ -59,10 +59,16 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we <= '0;
 		end else begin
-			if (state == NY) begin
-				we <= ~we_go;
+			if (vsync == 1'b1) begin
+				we <= '0;
+			end else if (state == BX) begin
+			    we[1] <= 0;
+			    we[0] <= ~we_go;
+			end else if (href &&(state == RG || state == IDLE)) begin
+			    we[1] <= ~we_go;
+			    we[0] <= 0;
 			end else begin
-				we <= 0;
+			    we <= '0;
 			end
 		end
 	end
@@ -75,13 +81,13 @@ module ov7670_capture 	(
 				state <= IDLE;
 			end else if (href == 1'b1) begin
 				case (state)
-					IDLE: 	state <= NY;
-					NY:		state <= Y;
-					Y:		state <= NY;
-					default : state <= IDLE;
+				    IDLE:       state <= BX;
+				    RG:         state <= BX;
+				    BX:         state <= RG;
+				    default:    state <= IDLE;
 				endcase
 			end else begin
-			    state <= IDLE;
+				state <= IDLE;
 			end
 		end
 	end

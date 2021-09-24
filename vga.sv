@@ -36,14 +36,15 @@ module vga
 			)
 			(
 			input                clk25,
-			input        [3:0]   frame_pixel,
+			input        [11:0]   frame_pixel,
 			input                rst_n,
 			output       [18:0]	 frame_addr,
 			output logic [3:0]	 vga_red,
 			output logic [3:0]	 vga_green,
 			output logic [3:0]	 vga_blue,
 			output logic 		 vga_hsync,
-			output logic		 vga_vsync
+			output logic		 vga_vsync,
+			input  logic [2:0]   switches
 			);
 
 
@@ -55,8 +56,7 @@ module vga
 	
 	assign frame_addr = address;
 
-// horizontal counter of vga output
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_hCounter                  
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_hCounter                  // horizontal counter of vga output
 		if(~rst_n) begin
 			hCounter <= '0;
 		end else begin
@@ -68,8 +68,7 @@ module vga
 		end
 	end
 
-// vertical counter of vga output
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vCounter                  
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vCounter                  // vertical counter of vga output
 		if(~rst_n) begin
 			vCounter <= '0;
 		end else begin
@@ -83,8 +82,7 @@ module vga
 		end
 	end
 
-// address of vga output pixel
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_address                   
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_address                   // address of vga output pixel
 		if(~rst_n) begin
 			address <= 0;
 		end else begin
@@ -98,8 +96,7 @@ module vga
 		end
 	end
 
-// whether send pixel value or not
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_blank                     
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_blank                     // whether send pixel value or not
 		if(~rst_n) begin
 			blank <= 1'b1;
 		end else begin
@@ -115,15 +112,14 @@ module vga
 		end
 	end
 
-// vga_rgb value
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_rgb                   
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_rgb                   // vga_rgb value
 		if(~rst_n) begin
 			{vga_red, vga_green, vga_blue} <= '0;
 		end else begin
 			if (blank == 1'b0) begin
-                vga_red <= frame_pixel;
-                vga_green <= frame_pixel;
-                vga_blue <= frame_pixel;
+                vga_red <= switches[2] ? 0 : frame_pixel[11:8];
+                vga_green <= switches[1] ? 0 : frame_pixel[7:4];
+                vga_blue <= switches[0] ? 0 : frame_pixel[3:0];
 			end else begin
                 vga_red <= 4'b0;
                 vga_green <= 4'b0;
@@ -132,8 +128,7 @@ module vga
 		end
 	end
 
-// vga horizontal sync
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_hsync                 
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_hsync                 // vga horizontal sync
 		if(~rst_n) begin
 			vga_hsync <= ~hsync_active;
 		end else begin
@@ -145,8 +140,7 @@ module vga
 		end
 	end
 
-// vga vertical sync
-	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_vsync                 
+	always_ff @(posedge clk25 or negedge rst_n) begin : proc_vga_vsync                 // vga vertical sync
 		if(~rst_n) begin
 			vga_vsync <= ~vsync_active;
 		end else begin
