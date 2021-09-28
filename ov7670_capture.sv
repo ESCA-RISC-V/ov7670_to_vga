@@ -28,7 +28,7 @@ module ov7670_capture 	(
 						output logic 		we
 						);
 						
-    typedef enum logic[1:0] {IDLE, NY, Y} data_state;
+    typedef enum logic[1:0] {IDLE, REST, NY, Y} data_state;
 	data_state state;
     logic we_go;
     logic [18:0] addr_t, addr_s;
@@ -37,7 +37,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			addr <= '0;
 		end else begin
-			if (vsync == 1'b1) begin
+			if (state == IDLE) begin
 				addr <= '0;
 			end else if (state == Y) begin
 				addr <= addr + 1;
@@ -71,18 +71,39 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			state <= IDLE;
 		end else begin
-			if (vsync == 1'b1) begin
-				state <= IDLE;
-			end else if (href == 1'b1) begin
-				case (state)
-					IDLE: 	state <= NY;
-					NY:		state <= Y;
-					Y:		state <= NY;
-					default : state <= IDLE;
-				endcase
-			end else begin
-			    state <= IDLE;
-			end
+		    case(state)
+		        IDLE: begin
+                    if (vsync == 1'b0) begin
+                        state <= REST;
+                    end
+		        end
+		        REST: begin
+		            if (vsync == 1'b1) begin 
+		                state <= IDLE;
+		            end else if (href == 1'b1) begin
+		                state <= NY;
+		            end else begin
+		                state <= REST;
+		            end
+		        end
+		        NY: begin
+		            if (href == 1'b1) begin
+		                state <= Y;
+		            end else begin
+		                state <= REST;
+		            end
+		        end
+		        Y: begin
+		            if (href == 1'b1) begin
+		                state <= NY;
+		            end else begin
+		                state <= REST;
+		            end
+		        end
+		        default: begin
+		            state <= IDLE;
+		        end
+		    endcase
 		end
 	end
 
@@ -90,7 +111,7 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we_go <= sw;
 		end else begin
-			if (vsync == 1'b1) begin
+			if (state == IDLE) begin
 				we_go <= sw;
 			end
 		end

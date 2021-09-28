@@ -22,7 +22,7 @@ module core #(
             parameter width = 640,
             parameter height = 480,
             
-            localparam c_frame = width * height
+            localparam c_frame = width * height + 1
             )
             (
 			input                         clk25,

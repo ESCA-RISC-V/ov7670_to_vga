@@ -53,7 +53,7 @@ module ov7670_top	#(
         
 	// clocks
 	logic			clk100;
-	logic			clk75;
+	logic			clk25_20delay;
 	logic			clk50;
 	logic 			clk25;
 	// capture to mem_blk_0
@@ -83,9 +83,9 @@ module ov7670_top	#(
 		clk_wiz_0 clkwiz(
 			.clk_in_wiz(clk100_zed),
 			.clk_100wiz(clk100),
-			.clk_75wiz(clk75),
 			.clk_50wiz(clk50),
 			.clk_25wiz(clk25),
+			.clk_25wiz_20delay(clk25_20delay),
 			.resetn(rst_n)
 			);                                  
 			                     
@@ -109,7 +109,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina(capture_data),
 
-			.clkb(clk50),
+			.clkb(clk25_20delay),
 			.addrb(addr_core_to_mem0),
 			.doutb(data_to_core)
 			);
@@ -138,7 +138,7 @@ module ov7670_top	#(
 			.addra(addr_core_to_mem1),
 			.dina(data_from_core),
 
-			.clkb(clk50),
+			.clkb(clk25_20delay),
 			.addrb(frame_addr),
 			.doutb(frame_pixel)
 			);
