@@ -54,7 +54,7 @@ module ov7670_top	#(
         
 	// clocks
 	logic			clk100;
-	logic			clk75;
+	logic			clk25_50shift;
 	logic			clk50;
 	logic 			clk25;
 	// capture to mem_blk_0
@@ -75,9 +75,9 @@ module ov7670_top	#(
 		clk_wiz_0 clkwiz(                                             // clock generator
 			.clk_in_wiz(clk100_zed),
 			.clk_100wiz(clk100),
-			.clk_75wiz(clk75),
 			.clk_50wiz(clk50),
 			.clk_25wiz(clk25),
+			.clk_25wiz_50shift(clk25_50shift),
 			.resetn(rst_n)
 			);                                                       
 
@@ -99,7 +99,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina({capture_data[7:4], capture_data[2:0]}),
 
-			.clkb(clk50),
+			.clkb(clk25_50shift),                                            // you can replace clk25 with 50 phase shift with !clk25
 			.addrb(frame_addr),
 			.doutb(frame_pixel[11:5])
 			);
@@ -110,7 +110,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina({capture_data[7], capture_data[4:1]}),
 
-			.clkb(clk50),
+			.clkb(clk25_50shift),
 			.addrb(frame_addr),
 			.doutb(frame_pixel[4:0])
 			);

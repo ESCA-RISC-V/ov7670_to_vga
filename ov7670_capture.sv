@@ -28,7 +28,7 @@ module ov7670_capture 	(
 						output logic[1:0]	we
 						);
 						
-    typedef enum {IDLE, RG, BX} data_state;
+    typedef enum {IDLE, REST, RG, BX} data_state;
 	data_state state;
     logic we_go;
     logic[18:0]	addr_t;
@@ -38,11 +38,23 @@ module ov7670_capture 	(
 			addr <= '0;
 			addr_t <= '0;
 		end else begin
-			if (vsync == 1'b1) begin
-				addr_t <= '0;
-			end else if (state == BX) begin
-				addr_t <= addr_t + 1;
-			end
+			case (state)
+				IDLE: begin
+					addr_t <= '0;			
+				end
+				REST: begin
+					
+				end
+				RG: begin
+					
+				end
+				BX: begin
+					addr_t <= addr_t + 1;
+				end
+				default : begin
+
+				end
+			endcase
             addr <= addr_t;
 		end
 	end
@@ -57,14 +69,46 @@ module ov7670_capture 	(
 
 	always_ff @(posedge pclk or negedge rst_n) begin : proc_we
 		if(~rst_n) begin
-			we <= '0;
+			we <= 2'b0;
 		end else begin
-			if (vsync == 1'b1) begin
+			case (state)
+				IDLE: begin
+					we <= 2'b0;				
+				end
+				REST: begin
+					if (href) begin
+						we[1] <= ~we_go;
+			    		we[0] <= 0;
+					end else begin
+						we <= 2'b0;
+					end
+				end
+				RG: begin
+					if (href) begin
+						we[1] <= ~we_go;
+			    		we[0] <= 0;
+					end else begin
+						we <= 2'b0;
+					end
+				end
+				BX: begin
+					if (href) begin
+			    		we[1] <= 0;
+						we[0] <= ~we_go;
+					end else begin
+						we <= 2'b0;
+					end
+				end
+				default : begin
+					we <= 2'b0;
+				end
+			endcase			
+			if (state == IDLE) begin
 				we <= '0;
 			end else if (state == BX) begin
 			    we[1] <= 0;
 			    we[0] <= ~we_go;
-			end else if (href &&(state == RG || state == IDLE)) begin
+			end else if (href &&(state == RG || state == REST)) begin
 			    we[1] <= ~we_go;
 			    we[0] <= 0;
 			end else begin
@@ -77,18 +121,39 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			state <= IDLE;
 		end else begin
-			if (vsync == 1'b1) begin
-				state <= IDLE;
-			end else if (href == 1'b1) begin
-				case (state)
-				    IDLE:       state <= BX;
-				    RG:         state <= BX;
-				    BX:         state <= RG;
-				    default:    state <= IDLE;
-				endcase
-			end else begin
-				state <= IDLE;
-			end
+			case (state)
+				IDLE: begin
+					if (vsync == 1'b0) begin
+						state <= REST;
+					end
+				end
+				REST: begin
+					if (vsync == 1'b1) begin
+						state <= IDLE;
+					end else if (href == 1'b1) begin
+						state <= BX;
+					end else begin
+						state <= REST;
+					end
+				end
+				RG: begin
+					if (href == 1'b1) begin
+						state <= BX;
+					end else begin
+						state <= REST;
+					end
+				end
+				BX: begin
+					if (href == 1'b1) begin
+						state <= RG;
+					end else begin
+						state <= REST;
+					end
+				end
+				default : begin
+					state <= IDLE;
+				end
+			endcase
 		end
 	end
 
@@ -96,9 +161,23 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we_go <= sw;
 		end else begin
-			if (vsync == 1'b1) begin
-				we_go <= sw;
-			end
+			case (state)
+				IDLE: begin
+					we_go <= sw;				
+				end
+				REST: begin
+					
+				end
+				RG: begin
+					
+				end
+				BX: begin
+					
+				end
+				default : begin
+
+				end
+			endcase
 		end
 	end
 
