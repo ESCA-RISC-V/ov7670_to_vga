@@ -31,17 +31,31 @@ module ov7670_capture 	(
     typedef enum logic[1:0] {IDLE, REST, NY, Y} data_state;
 	data_state state;
     logic we_go;
-    logic [18:0] addr_t, addr_s;
+    logic [18:0] addr_t;
     
 	always_ff @(posedge pclk or negedge rst_n) begin : proc_addr_t
 		if(~rst_n) begin
 			addr <= '0;
+			addr_t <= '0;
 		end else begin
-			if (state == IDLE) begin
-				addr <= '0;
-			end else if (state == Y) begin
-				addr <= addr + 1;
-			end
+			case(state)
+		        IDLE: begin
+		        	addr_t <= '0;
+		        end
+		        REST: begin
+		        	
+		        end
+		        NY: begin	// former state == NY && href == 1 means present state == Y
+		            
+		        end
+		        Y: begin
+		            addr_t <= addr_t + 1;
+		        end
+		        default: begin
+		            
+		        end
+		    endcase
+		    addr <= addr_t;
 		end
 	end
 
@@ -49,9 +63,23 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			dout <= '0;
 		end else begin
-			if (state == NY) begin // former state == NY && href == 1 means present state == Y
-				dout <= din;
-			end
+		    case(state)
+		        IDLE: begin
+		        	
+		        end
+		        REST: begin
+		        	
+		        end
+		        NY: begin	// former state == NY && href == 1 means present state == Y
+		            dout <= din;
+		        end
+		        Y: begin
+		            
+		        end
+		        default: begin
+		            
+		        end
+		    endcase			
 		end
 	end
 
@@ -59,11 +87,23 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we <= '0;
 		end else begin
-			if (state == NY) begin
-				we <= ~we_go;
-			end else begin
-				we <= 0;
-			end
+		    case(state)
+		        IDLE: begin
+		        	we <= 0;
+		        end
+		        REST: begin
+		        	we <= 0;
+		        end
+		        NY: begin	// former state == NY && href == 1 means present state == Y
+		            we <= ~we_go;
+		        end
+		        Y: begin
+		            we <= 0;
+		        end
+		        default: begin
+		            we <= 0;
+		        end
+		    endcase
 		end
 	end
 
@@ -111,9 +151,23 @@ module ov7670_capture 	(
 		if(~rst_n) begin
 			we_go <= sw;
 		end else begin
-			if (state == IDLE) begin
-				we_go <= sw;
-			end
+		    case(state)
+		        IDLE: begin
+		        	we_go <= sw;
+		        end
+		        REST: begin
+
+		        end
+		        NY: begin
+		            
+		        end
+		        Y: begin
+		            
+		        end
+		        default: begin
+		            
+		        end
+		    endcase
 		end
 	end
 
