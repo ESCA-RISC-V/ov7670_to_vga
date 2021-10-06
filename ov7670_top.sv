@@ -108,7 +108,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina(capture_data),
 
-			.clkb(clk25_50shift), // you can replace clk25 with 50 phase shift with !clk25
+			.clkb(clk25_50shift), 
 			.addrb(addr_core_to_mem0),
 			.doutb(data_to_core)
 			);
