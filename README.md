@@ -44,7 +44,7 @@
 사용되는 ip는 아래와 같습니다.
 
 - clock wizard 한 개
-- block memory generator  개
+- block memory generator 두 개
 
 왼쪽의 'Flow Navigator'/'PROJECT MANAGER'/'IP Catalog'를 클릭하면 ip catalog를 열 수 있습니다. 
 Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xilinx ip를 생성하십시오.
