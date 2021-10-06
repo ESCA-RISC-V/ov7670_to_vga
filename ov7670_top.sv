@@ -76,8 +76,7 @@ module ov7670_top	#(
     wire rst_n = ~PAD_RESET;
 
 // show some informations with LED
-//  assign LED = {SW[7:1], config_finished};
-    assign LED = read;
+    assign LED = {SW[7:1], config_finished};
 
 // clock generator
 		clk_wiz_0 clkwiz(
