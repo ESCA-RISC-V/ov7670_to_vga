@@ -59,6 +59,7 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 	- Output Clock2 : name - clk_50wiz / frequency - 50MHz
 	- Output Clock3 : name - clk_25wiz / frequency - 25MHz
 	- Output Clock4 : name - clk_25wiz_50shift / frequency - 25MHz / Phase - 50 (실제로는 50과 조금 다를 수 있지만, 큰 영향은 없습니다.)
+	- Reset type at Output Clock - Active Low
 	
 2. 첫번째 block memeory generator 생성
 
