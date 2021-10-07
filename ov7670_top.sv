@@ -52,10 +52,10 @@ module ov7670_top	#(
 					);
         
 	// clocks
+	logic			clk100_180shift;
 	logic			clk100;
 	logic			clk25_180shift;
-	logic			clk50;
-	logic 			clk25;
+	logic			clk25;
 	// capture to mem_blk_0
 	logic [18:0]	capture_addr;
 	logic [7:0] 	capture_data;
@@ -82,7 +82,7 @@ module ov7670_top	#(
 		clk_wiz_0 clkwiz(
 			.clk_in_wiz(clk100_zed),
 			.clk_100wiz(clk100),
-			.clk_50wiz(clk50),
+			.clk_100wiz_180shift(clk100_180shift),
 			.clk_25wiz(clk25),
 			.clk_25wiz_180shift(clk25_180shift),
 			.resetn(rst_n)
