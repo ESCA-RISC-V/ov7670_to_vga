@@ -54,11 +54,11 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 이 clocking wizard는 zedboard clock을 받아, 다양한 frequency의 clock으로 바꾸어줍니다.
 
 	- Component Name : clk_wiz_0(이 이름은 프로젝트 내에서 첫 번째로 clock wizard를 생성할 경우 기본으로 지정되는 이름입니다.)
-	- Input Clock : name - clk_in_wiz / frequency - 100MHz
-	- Output Clock1 : name - clk_100wiz / frequency - 100MHz
-	- Output Clock2 : name - clk_50wiz / frequency - 50MHz
-	- Output Clock3 : name - clk_25wiz / frequency - 25MHz
-	- Output Clock4 : name - clk_25wiz_50shift / frequency - 25MHz / Phase - 180 (실제로는 50과 조금 다를 수 있지만, 큰 영향은 없습니다.)
+	- Input Clock : name - clk_in_wiz 		/ frequency - 100MHz
+	- Output Clock1 : name - clk_100wiz 		/ frequency - 100MHz
+	- Output Clock2 : name - clk_100wiz_180shift 	/ frequency - 100MHz 	/ Phase - 180
+	- Output Clock3 : name - clk_25wiz 		/ frequency - 25MHz
+	- Output Clock4 : name - clk_25wiz_180shift 	/ frequency - 25MHz 	/ Phase - 180
 	- Reset Type at Output Clock - Active Low
 	
 
