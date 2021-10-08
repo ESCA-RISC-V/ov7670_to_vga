@@ -161,3 +161,8 @@ btnc : 하드웨어 리셋
 ## 6. 실행화면
 
 ![image](https://user-images.githubusercontent.com/80150832/130914867-67806064-a027-4f07-9dd9-c4e3761d3aea.png)
+
+## 7. Testbench
+
+Testvector는 아래의 이미지가 입력되도록 하였습니다. (640 x 480)
+![gray](https://user-images.githubusercontent.com/80150832/136519940-e0d463a0-5537-4e0e-b6bb-22e9410bb624.png)
