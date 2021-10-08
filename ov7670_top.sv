@@ -52,10 +52,10 @@ module ov7670_top	#(
 					);
         
 	// clocks
-	logic			clk100_180shift;
 	logic			clk100;
+	logic			clk100_180shift;
+	logic 			clk25;
 	logic			clk25_180shift;
-	logic			clk25;
 	// capture to mem_blk_0
 	logic [18:0]	capture_addr;
 	logic [7:0] 	capture_data;
@@ -77,6 +77,7 @@ module ov7670_top	#(
 
 // show some informations with LED
     assign LED = {SW[7:1], config_finished};
+  
 
 // clock generator
 		clk_wiz_0 clkwiz(
@@ -108,7 +109,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina(capture_data),
 
-			.clkb(clk25_180shift), 
+			.clkb(clk25_180shift), // you can replace clk25 with 50 phase shift with !clk25
 			.addrb(addr_core_to_mem0),
 			.doutb(data_to_core)
 			);
