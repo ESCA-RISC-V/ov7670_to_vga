@@ -26,9 +26,11 @@
 
 module ov7670_top	#(
                     parameter screenwidth = 640,
-                    parameter screenheight = 480
+                    parameter screenheight = 480,
+                    parameter hMaxCount = 800,
+                    parameter vMaxCount = 525
                     )(
-					input 	     		    clk100_zed,
+					input 	     		  clk100_zed,
 					output      			OV7670_SIOC,  // similar with I2C's SCL
 					inout 	     			OV7670_SIOD,  // similar with I2C's SDA
 					output      			OV7670_RESET, // ov7670 reset
@@ -52,10 +54,10 @@ module ov7670_top	#(
 					);
         
 	// clocks
-	logic			clk100;
-	logic			clk100_180shift;
-	logic 			clk25;
-	logic			clk25_180shift;
+	logic			clk48;
+	logic			clk48_180shift;
+	logic 			clk24;
+	logic			clk24_180shift;
 	// capture to mem_blk_0
 	logic [18:0]	capture_addr;
 	logic [7:0] 	capture_data;
@@ -72,20 +74,21 @@ module ov7670_top	#(
 	// controller to LED
 	logic 			config_finished;
 	logic [7:0]     read;
+	logic           capture_end, core_end;
+	
 	
     wire rst_n = ~PAD_RESET;
-
+	
 // show some informations with LED
     assign LED = {SW[7:1], config_finished};
-  
 
 // clock generator
 		clk_wiz_0 clkwiz(
 			.clk_in_wiz(clk100_zed),
-			.clk_100wiz(clk100),
-			.clk_100wiz_180shift(clk100_180shift),
-			.clk_25wiz(clk25),
-			.clk_25wiz_180shift(clk25_180shift),
+			.clk_48wiz(clk48),
+			.clk_48wiz_180shift(clk48_180shift),
+			.clk_24wiz(clk24),
+			.clk_24wiz_180shift(clk24_180shift),
 			.resetn(rst_n)
 			);                                  
 			                     
@@ -99,7 +102,8 @@ module ov7670_top	#(
 			.din(OV7670_D),
 			.addr(capture_addr),
 			.dout(capture_data),
-			.we(capture_we[0])
+			.we(capture_we[0]),
+			.capture_end(capture_end)
 			);
 
 // stores captured data
@@ -109,7 +113,7 @@ module ov7670_top	#(
 			.addra(capture_addr),
 			.dina(capture_data),
 
-			.clkb(clk25_180shift), // you can replace clk25 with 50 phase shift with !clk25
+			.clkb(clk24_180shift), // you can replace clk24 with 50 phase shift with !clk24
 			.addrb(addr_core_to_mem0),
 			.doutb(data_to_core)
 			);
@@ -119,26 +123,28 @@ module ov7670_top	#(
 // you can modify this module to change vga output or anything else
 		core #(
 		    .width(screenwidth),
-		    .height(screenheight)
+		    .height(screenheight),
+		    .hMaxCount(hMaxCount),
+		    .vMaxCount(vMaxCount)
 		    )icore(                                                   
-			.clk25(clk25),
+			.clk24(clk24),
 			.din(data_to_core),
-			.lenet_signal(SW[7]),
 			.rst_n(rst_n),
 			.addr_mem0(addr_core_to_mem0),
 			.addr_mem1(addr_core_to_mem1),
 			.dout(data_from_core),
-			.we(we_core_to_mem1[0])
+			.we(we_core_to_mem1[0]),
+			.core_end(core_end)
 			);
 
 // stores processed data, connected with vga module
 		blk_mem_gen_1 processed_data_for_vga(                                            
-			.clka(clk25),
+			.clka(clk24),
 			.wea(we_core_to_mem1),
 			.addra(addr_core_to_mem1),
 			.dina(data_from_core),
 
-			.clkb(clk25_180shift),
+			.clkb(clk24_180shift),
 			.addrb(frame_addr),
 			.doutb(frame_pixel)
 			);
@@ -148,15 +154,15 @@ module ov7670_top	#(
 		     .hRez(640),
 		     .hStartSync(640 + 16),
 		     .hEndSync(640 + 16 + 96),
-		     .hMaxCount(640 + 16 + 96 + 48),
+		     .hMaxCount(hMaxCount),
 		     .vRez(480),
 		     .vStartSync(480 + 10),
 		     .vEndSync(480 + 10 + 2),
-		     .vMaxCount(480 + 10 + 2 + 33),
+		     .vMaxCount(vMaxCount),
 		     .hsync_active(1'b0),
 		     .vsync_active(1'b0)
 		     )ivga(                                                     
-			.clk25(clk25),
+			.clk24(clk24),
 			.rst_n(rst_n),
 			.frame_addr(frame_addr),
 			.frame_pixel(frame_pixel),
@@ -171,8 +177,8 @@ module ov7670_top	#(
         camera_configure #(
           .CLK_FREQ(25000000)
             )configure(
-		  .clk(clk25),
-		  .sclk(clk100),
+		  .clk(clk24),
+		  .sclk(clk48),
 		  .clk_en(1'b1),
 		  .rst_n(rst_n),
 		  .sioc(OV7670_SIOC),
@@ -181,7 +187,9 @@ module ov7670_top	#(
           .pwdn(OV7670_PWDN),
           .reset(OV7670_RESET),
           .xclk(OV7670_XCLK),
-          .read(read)
+          .read(read),
+          .capture_end(capture_end),
+          .core_end(core_end)
 		  );
 
 endmodule // ov7670_top

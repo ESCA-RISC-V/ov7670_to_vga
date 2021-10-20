@@ -35,15 +35,19 @@ module camera_configure
     output logic reset,
     output pwdn,
     output xclk,
-    output [7:0] read
+    output [7:0] read,
+    input  capture_end,
+    input  core_end
     );
     
     logic sys_clk;
     logic start;
     logic [9:0] counter;
+    logic xclk_en;
+    
     assign pwdn = 1'b0;
     assign reset = 1'b1;
-    assign xclk = sys_clk;
+    assign xclk = xclk_en ? sclk : 0;
 
     wire [7:0] rom_addr;
     wire [15:0] rom_dout;
@@ -51,24 +55,33 @@ module camera_configure
     wire [7:0] SCCB_data;
     wire SCCB_start;
     wire SCCB_ready;
+    
 
-    always_ff @(posedge sclk or negedge rst_n) begin : proc_sys_clk
-        if(~rst_n) begin
-            sys_clk <= 0;
-        end else if (clk_en) begin
-            sys_clk <= ~sys_clk;
-        end
+    always_ff @(posedge sclk or negedge rst_n) begin : proc_xclk_en
+       if (~rst_n) begin
+           xclk_en <= 1;
+       end
+       else begin
+           if (done && capture_end) begin       // do not sync until sccb setting is done
+               xclk_en <= 0;
+           end 
+           else if (core_end) begin
+               xclk_en <= 1;
+           end
+       end
     end
 
     always_ff @(posedge clk or negedge rst_n) begin : proc_start
         if(~rst_n) begin
             start <= 0;
             counter <= 100;
-        end else if(clk_en) begin
+        end 
+        else if(clk_en) begin
             counter <= counter == 0 ? 0 : counter - 1;
             if (counter == 1) begin
                 start <= 1;
-            end else begin
+            end 
+            else begin
                 start <= 0;
             end
         end

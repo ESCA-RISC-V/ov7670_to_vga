@@ -32,14 +32,15 @@ module OV7670_config_rom(
     always_ff @(posedge clk or negedge rst_n) begin : proc_dout
         if(~rst_n) begin
             dout <= 0;
-        end else if(clk_en) begin
+        end 
+        else if(clk_en) begin
             case(addr) 
-            0:  dout <= 16'h12_80; // Reset registers
-//          1:  dout <= 16'h12_01; // Set to RGB mode
-//          2:  dout <= 16'h3A_06; // Change UYUV to YUYV
-//          3:  dout <= 16'hFE_1A; // COM7      reading - work in progress (dout[15:8] == FE means reading register at dout[7:0])
-
-            default: dout <= 16'hFF_FF;         //mark end of ROM
+                0:  dout <= 16'h12_80; // Reset registers
+    //          1:  dout <= 16'h12_01; // Set to RGB mode
+    //          2:  dout <= 16'h3A_06; // Change UYUV to YUYV
+    //          3:  dout <= 16'hFE_1A; // COM7      reading - work in progress (dout[15:8] == FE means reading register at dout[7:0])
+    
+                default: dout <= 16'hFF_FF;         //mark end of ROM
             endcase
         end
     end

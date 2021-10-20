@@ -25,7 +25,6 @@ module ov7670_tb(
     parameter CLK_PERIOD = 10;
     
     logic clkgen;
-    logic pclkgen;
     logic rst_n;
     logic [7:0] sw;
     logic [7:0] d;
@@ -33,16 +32,11 @@ module ov7670_tb(
     logic vsync;
     logic [31:0] counter;
     logic [31:0] d_counter;
+    logic xclk; 
     initial begin
         clkgen = 0;        
         #(CLK_PERIOD);
         forever clkgen = #(CLK_PERIOD/2) ~clkgen;
-    end
-   
-    initial begin
-        pclkgen = 0;        
-        #(8);
-        forever pclkgen = #(CLK_PERIOD/2) ~pclkgen;
     end
    
     initial begin
@@ -55,7 +49,7 @@ module ov7670_tb(
         sw = 8'b01110000;
     end
     
-    always_ff @(posedge !pclkgen or negedge rst_n) begin : proc_d
+    always_ff @(posedge !xclk or negedge rst_n) begin : proc_d
         if(~rst_n) begin
             d_counter <= 0;
         end else begin
@@ -70,7 +64,7 @@ module ov7670_tb(
     end
 
 
-    always_ff @(posedge !pclkgen or negedge rst_n) begin : proc_counter
+    always_ff @(posedge !xclk or negedge rst_n) begin : proc_counter
         if(~rst_n) begin
             counter <= 0;
         end else begin
@@ -82,7 +76,7 @@ module ov7670_tb(
         end
     end
 
-    always_ff @(posedge !pclkgen or negedge rst_n) begin : proc_vsync
+    always_ff @(posedge !xclk or negedge rst_n) begin : proc_vsync
         if(~rst_n) begin
             vsync <= 0;
         end else begin
@@ -94,7 +88,7 @@ module ov7670_tb(
         end
     end
 
-    always_ff @(posedge !pclkgen or negedge rst_n) begin : proc_href
+    always_ff @(posedge !xclk or negedge rst_n) begin : proc_href
         if(~rst_n) begin
             href <= 0;
         end else begin
@@ -118,8 +112,8 @@ module ov7670_tb(
         .OV7670_PWDN(),
         .OV7670_VSYNC(vsync),
         .OV7670_HREF(href),
-        .OV7670_PCLK(pclkgen),
-        .OV7670_XCLK(),
+        .OV7670_PCLK(xclk),
+        .OV7670_XCLK(xclk),
         .OV7670_D(d),
         .LED(),
         .vga_red(),
