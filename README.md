@@ -55,10 +55,10 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 
 	- Component Name : clk_wiz_0(이 이름은 프로젝트 내에서 첫 번째로 clock wizard를 생성할 경우 기본으로 지정되는 이름입니다.)
 	- Input Clock : name - clk_in_wiz 		/ frequency - 100MHz
-	- Output Clock1 : name - clk_100wiz 		/ frequency - 100MHz
-	- Output Clock2 : name - clk_100wiz_180shift 	/ frequency - 100MHz 	/ Phase - 180
-	- Output Clock3 : name - clk_25wiz 		/ frequency - 25MHz
-	- Output Clock4 : name - clk_25wiz_180shift 	/ frequency - 25MHz 	/ Phase - 180
+	- Output Clock1 : name - clk_48wiz 		/ frequency - 48MHz
+	- Output Clock2 : name - clk_48wiz_180shift 	/ frequency - 48MHz 	/ Phase - 180
+	- Output Clock3 : name - clk_24wiz 		/ frequency - 24MHz
+	- Output Clock4 : name - clk_24wiz_180shift 	/ frequency - 24MHz 	/ Phase - 180
 	- Reset Type at Output Clock - Active Low
 	
 
@@ -155,6 +155,8 @@ Bitstream이 올라가고 촬영 화면이 잘 나오는지 확인하세요.
 ## 5. 디자인
 
 ### 1. 스위치와 버튼
+
+SW7 : 화면 정지
 
 btnc : 하드웨어 리셋
 
