@@ -94,7 +94,7 @@ Vivado에서는 'generate bitstream'을 클릭하면, synthesis와 implementatio
 
 ### 1. OV7670 카메라와 Zedboard 연결하기
 
-연결을 위해서는 F/M 소켓 점퍼 케이블이 20개 필요합니다. 아래의 표를 참조하여 연결해주세요.
+연결을 위해서는 F/M 소켓 점퍼 케이블이 18개 필요합니다. 아래의 표를 참조하여 연결해주세요.
 
 |ov7670|Zedboard|Zynq|Verilog|
 |--------|--------|--------|--------|
