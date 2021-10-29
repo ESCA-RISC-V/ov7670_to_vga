@@ -110,20 +110,13 @@ Vivado에서는 'generate bitstream'을 클릭하면, synthesis와 implementatio
 |D5|JB10|V8|OV7670_D[5]|
 |-|-|-|-|
 |D6|JC1_P|AB7|OV7670_D[6]|
-|-|JC1_N|AB6|-|
 |MCLK|JC2_P|Y4|OV7670_XCLK|
-|-|JC2_N|AA4|-|
 |D7|JC3_P|R6|OV7670_D[7]|
-|-|JC3_N|T6|-|
 |PCLK|JC4_P|T4|OV7670_PCLK|
-|-|JC4_N|U4|-|
 |-|-|-|-|
 |HREF/HS|JD1_P|V7|OV7670_HREF|
-|-|JD1_N|W7|-|
 |SIOD/SDA|JD2_P|V5|OV7670_SIOD|
-|-|JD2_N|V4|-|
 |VSYNC/VS|JD3_P|W6|OV7670_VSYNC|
-|-|JD3_N|W5|-|
 |SIOC/SCL|JD4_P|U6|OV7670_SIOC|
 |-|JD4_N|U5|-|
 
