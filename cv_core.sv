@@ -67,7 +67,7 @@ module core #(
 
 // address_mem0 - address of pixel of input data
 
-    assign address_mem0 = hor < 720 && ver < 480 ? hor + ver * width : 0;
+    assign address_mem0 = hor < 640 && ver < 480 ? hor + ver * width : 0;
     
     always_ff @(posedge clk24 or negedge rst_n) begin : proc_hor_ver                                   
         if(~rst_n) begin
