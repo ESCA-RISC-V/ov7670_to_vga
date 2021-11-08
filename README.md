@@ -68,9 +68,8 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 
 	- Component Name : blk_mem_gen_0(이 이름은 프로젝트 내에서 첫 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다.)
 	- Memory Type : Simple Dual Port RAM
-	- Port A Options : Port A Width - 8 / Port A Depth - 307200 / Enable Port Type - Always Enabled
+	- Port A Options : Port A Width - 8 / Port A Depth - 307200 / Enable Port Type - Always Enabled / Operating Mode - Read First
 	- Port B Options : Port B Width - 8 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
-        - Read first!
 
 3. 두번째 block memeory generator 생성
 
@@ -78,9 +77,8 @@ Ip catalog에서 해당하는 ip를 찾아 아래의 설정을 참고하여 xili
 
   	- Component Name : blk_mem_gen_1(이 이름은 프로젝트 내에서 두 번째로 block memory를 생성할 경우 기본으로 지정되는 이름입니다)
 	- Memory Type : Simple Dual Port RAM
-	- Port A Options : Port A Width - 4 / Port A Depth - 307200 / Enable Port Type - Always Enabled
+	- Port A Options : Port A Width - 4 / Port A Depth - 307200 / Enable Port Type - Always Enabled / Operating Mode - Read First
 	- Port B Options : Port B Width - 4 / Port B Depth - 307200 / Enable Port Type - Always Enabled // not use primitive output register
-        - Read first!
 
 ### 3. Bitstream 생성하기
 
