@@ -53,7 +53,7 @@ module vga
 	logic [18:0]   address;
 	logic 		   blank;
 	
-	assign frame_addr = hCounter < hRez ? address : 0;
+	assign frame_addr = hCounter < hRez && address < 640 * 480 ? address : 0;
 
 // horizontal counter of vga output
 	always_ff @(posedge clk24 or negedge rst_n) begin : proc_hCounter                  
