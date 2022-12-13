@@ -171,7 +171,7 @@ switch 4 : Blue 값 VGA로 송출 중지
 
 ![image](https://user-images.githubusercontent.com/80150832/134631038-090e16ca-20b2-40ef-8edf-852c9268041a.png)
 
-##7. Testbench
+## 7. Testbench
 
 Testvector는 아래의 이미지가 입력되도록 하였습니다. (640 x 480)
 ![rgb](https://user-images.githubusercontent.com/80150832/136523943-920768eb-1b02-4c1c-bef6-89c6618d0417.png)
